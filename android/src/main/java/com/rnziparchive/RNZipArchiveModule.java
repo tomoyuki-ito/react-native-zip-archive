@@ -27,6 +27,9 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+
 public class RNZipArchiveModule extends ReactContextBaseJavaModule {
   private static final String TAG = RNZipArchiveModule.class.getSimpleName();
 
@@ -45,7 +48,7 @@ public class RNZipArchiveModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void unzip(final String zipFilePath, final String destDirectory, final Promise promise) {
+  public void unzip(final String zipFilePath, final String destDirectory, final String password, final Promise promise) {
     new Thread(new Runnable() {
       @Override
       public void run() {
@@ -78,61 +81,70 @@ public class RNZipArchiveModule extends ReactContextBaseJavaModule {
 
           updateProgress(0, 1, zipFilePath); // force 0%
 
-          // We use arrays here so we can update values
-          // from inside the callback
-          final long[] extractedBytes = {0};
-          final int[] lastPercentage = {0};
 
+          // zip4j
           final ZipFile zipFile = new ZipFile(zipFilePath);
-          final Enumeration<? extends ZipEntry> entries = zipFile.entries();
-          Log.d(TAG, "Zip has " + zipFile.size() + " entries");
-          while (entries.hasMoreElements()) {
-            final ZipEntry entry = entries.nextElement();
-            if (entry.isDirectory()) continue;
+          if (zipFile.isEncrypted()) {
+              zipFile.setPassword(password);
+          }
+          zipFile.extractAll(destDirectory);
 
-            StreamUtil.ProgressCallback cb = new StreamUtil.ProgressCallback() {
-              @Override
-              public void onCopyProgress(long bytesRead) {
-                extractedBytes[0] += bytesRead;
 
-                int lastTime = lastPercentage[0];
-                int percentDone = (int) ((double) extractedBytes[0] * 100 / (double) totalUncompressedBytes);
-
-                // update at most once per percent.
-                if (percentDone > lastTime) {
-                  lastPercentage[0] = percentDone;
-                  updateProgress(extractedBytes[0], totalUncompressedBytes, entry.getName());
-                }
-              }
-            };
-
-            File fout = new File(destDirectory, entry.getName());
-            if (!fout.exists()) {
-              //noinspection ResultOfMethodCallIgnored
-              (new File(fout.getParent())).mkdirs();
-            }
-            InputStream in = null;
-            BufferedOutputStream Bout = null;
-            try {
-              in = zipFile.getInputStream(entry);
-              Bout = new BufferedOutputStream(new FileOutputStream(fout));
-              StreamUtil.copy(in, Bout, cb);
-              Bout.close();
-              in.close();
-            } catch (IOException ex) {
-              if (in != null) {
-                try {
-                  in.close();
-                } catch (Exception ignored) {
-                }
-              }
-              if (Bout != null) {
-                try {
-                  Bout.close();
-                } catch (Exception ignored) {
-                }
-              }
-            }
+          // // We use arrays here so we can update values
+          // // from inside the callback
+          // final long[] extractedBytes = {0};
+          // final int[] lastPercentage = {0};
+          //
+          // final ZipFile zipFile = new ZipFile(zipFilePath);
+          // final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+          // Log.d(TAG, "Zip has " + zipFile.size() + " entries");
+          // while (entries.hasMoreElements()) {
+          //   final ZipEntry entry = entries.nextElement();
+          //   if (entry.isDirectory()) continue;
+          //
+          //   StreamUtil.ProgressCallback cb = new StreamUtil.ProgressCallback() {
+          //     @Override
+          //     public void onCopyProgress(long bytesRead) {
+          //       extractedBytes[0] += bytesRead;
+          //
+          //       int lastTime = lastPercentage[0];
+          //       int percentDone = (int) ((double) extractedBytes[0] * 100 / (double) totalUncompressedBytes);
+          //
+          //       // update at most once per percent.
+          //       if (percentDone > lastTime) {
+          //         lastPercentage[0] = percentDone;
+          //         updateProgress(extractedBytes[0], totalUncompressedBytes, entry.getName());
+          //       }
+          //     }
+          //   };
+          //
+          //   File fout = new File(destDirectory, entry.getName());
+          //   if (!fout.exists()) {
+          //     //noinspection ResultOfMethodCallIgnored
+          //     (new File(fout.getParent())).mkdirs();
+          //   }
+          //   InputStream in = null;
+          //   BufferedOutputStream Bout = null;
+          //   try {
+          //     in = zipFile.getInputStream(entry);
+          //     Bout = new BufferedOutputStream(new FileOutputStream(fout));
+          //     StreamUtil.copy(in, Bout, cb);
+          //     Bout.close();
+          //     in.close();
+          //   } catch (IOException ex) {
+          //     if (in != null) {
+          //       try {
+          //         in.close();
+          //       } catch (Exception ignored) {
+          //       }
+          //     }
+          //     if (Bout != null) {
+          //       try {
+          //         Bout.close();
+          //       } catch (Exception ignored) {
+          //       }
+          //     }
+          //   }
           }
 
           zipFile.close();

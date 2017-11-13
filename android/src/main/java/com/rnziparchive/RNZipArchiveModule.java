@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+// import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -71,7 +71,7 @@ public class RNZipArchiveModule extends ReactContextBaseJavaModule {
         try {
           // Find the total uncompressed size of every file in the zip, so we can
           // get an accurate progress measurement
-          final long totalUncompressedBytes = getUncompressedSize(zipFilePath);
+          // final long totalUncompressedBytes = getUncompressedSize(zipFilePath);
 
           File destDir = new File(destDirectory);
           if (!destDir.exists()) {
@@ -147,7 +147,7 @@ public class RNZipArchiveModule extends ReactContextBaseJavaModule {
           //   }
           // }
 
-          zipFile.close();
+          // zipFile.close();
           updateProgress(1, 1, zipFilePath); // force 100%
           promise.resolve(destDirectory);
         } catch (Exception ex) {
@@ -363,22 +363,22 @@ public class RNZipArchiveModule extends ReactContextBaseJavaModule {
    *
    * @return -1 on failure
    */
-  private long getUncompressedSize(String zipFilePath) {
-    long totalSize = 0;
-    try {
-      ZipFile zipFile = new ZipFile(zipFilePath);
-      Enumeration<? extends ZipEntry> entries = zipFile.entries();
-      while (entries.hasMoreElements()) {
-        ZipEntry entry = entries.nextElement();
-        long size = entry.getSize();
-        if (size != -1) {
-          totalSize += size;
-        }
-      }
-      zipFile.close();
-    } catch (IOException ignored) {
-      return -1;
-    }
-    return totalSize;
-  }
+  // private long getUncompressedSize(String zipFilePath) {
+  //   long totalSize = 0;
+  //   try {
+  //     ZipFile zipFile = new ZipFile(zipFilePath);
+  //     Enumeration<? extends ZipEntry> entries = zipFile.entries();
+  //     while (entries.hasMoreElements()) {
+  //       ZipEntry entry = entries.nextElement();
+  //       long size = entry.getSize();
+  //       if (size != -1) {
+  //         totalSize += size;
+  //       }
+  //     }
+  //     zipFile.close();
+  //   } catch (IOException ignored) {
+  //     return -1;
+  //   }
+  //   return totalSize;
+  // }
 }

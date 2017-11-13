@@ -18,8 +18,8 @@ var ZipArchive = {
     return _unzip(source, target)
       .catch(_error)
   },
-  zip (source, target) {
-    return _zip(source, target)
+  zip (source, target, password) {
+    return _zip(source, target, password)
       .catch(_error)
   },
   unzipAssets (source, target) {

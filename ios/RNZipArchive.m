@@ -23,12 +23,13 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(unzip:(NSString *)from
                   destinationPath:(NSString *)destinationPath
+                  password:(NSString *)password
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
 
     [self zipArchiveProgressEvent:0 total:1 filePath:from]; // force 0%
 
-    BOOL success = [RNZASSZipArchive unzipFileAtPath:from toDestination:destinationPath delegate:self];
+    BOOL success = [RNZASSZipArchive unzipFileAtPath:from toDestination:destinationPath overwrite:YES password:password error:nil delegate:self];
 
     [self zipArchiveProgressEvent:1 total:1 filePath:from]; // force 100%
 

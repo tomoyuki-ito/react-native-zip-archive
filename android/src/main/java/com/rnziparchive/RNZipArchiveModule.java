@@ -145,7 +145,7 @@ public class RNZipArchiveModule extends ReactContextBaseJavaModule {
           //       }
           //     }
           //   }
-          }
+          // }
 
           zipFile.close();
           updateProgress(1, 1, zipFilePath); // force 100%

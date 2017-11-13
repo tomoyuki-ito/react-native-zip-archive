@@ -14,12 +14,12 @@ var _error = (err) => {
 }
 
 var ZipArchive = {
-  unzip (source, target) {
-    return _unzip(source, target)
+  unzip (source, target, password) {
+    return _unzip(source, target, password)
       .catch(_error)
   },
-  zip (source, target, password) {
-    return _zip(source, target, password)
+  zip (source, target) {
+    return _zip(source, target)
       .catch(_error)
   },
   unzipAssets (source, target) {
